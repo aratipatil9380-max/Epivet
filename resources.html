@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EpiVet India - Resources</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --bg-gradient-1: #0f0c29;
+            --bg-gradient-2: #302b63;
+            --bg-gradient-3: #24243e;
+            --primary-color: #00d4ff;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-color: #fff;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-mode {
+            --bg-gradient-1: #e0f7ff;
+            --bg-gradient-2: #fef3c7;
+            --bg-gradient-3: #f0f9ff;
+            --primary-color: #0891b2;
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-color: #1a1a2e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 50%, var(--bg-gradient-3) 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .header {
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: var(--glass-bg);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px var(--shadow-color);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 15px;
+            padding: 8px 15px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: var(--glass-bg);
+            color: var(--primary-color);
+        }
+
+        .nav-links a.active {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-box {
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-color);
+            outline: none;
+            width: 220px;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            width: 280px;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .search-box::placeholder {
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 34px;
+            border: 2px solid var(--glass-border);
+            transition: 0.4s;
+        }
+
+        .slider::before {
+            position: absolute;
+            content: "🌙";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        input:checked+.slider {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+
+        input:checked+.slider::before {
+            transform: translateX(28px);
+            content: "☀️";
+        }
+
+        .data-source {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            z-index: 900;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            font-size: 12px;
+            color: var(--text-color);
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .data-source a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .data-source a:hover {
+            text-decoration: underline;
+        }
+
+        .emergency-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 900;
+            border: 4px solid #fff;
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.6);
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .emergency-btn .icon {
+            font-size: 32px;
+            margin-bottom: 2px;
+        }
+
+        .emergency-btn .text {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 30px 80px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            font-size: 46px;
+            background: linear-gradient(135deg, var(--primary-color), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header p {
+            margin-top: 14px;
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 22px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            padding: 22px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            transition: all 0.3s;
+        }
+
+        body.light-mode .stat-card {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 212, 255, 0.3);
+            border-color: var(--primary-color);
+        }
+
+        .stat-card h3 {
+            font-size: 15px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-card .value {
+            margin-top: 10px;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .stat-card .label {
+            margin-top: 4px;
+            font-size: 13px;
+            opacity: 0.75;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1.7fr 1.1fr;
+            gap: 22px;
+            align-items: flex-start;
+        }
+
+        .glass-card {
+            padding: 22px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+
+        body.light-mode .glass-card {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .card-title {
+            font-size: 18px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filters-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .pill-select,
+        .pill-input {
+            border-radius: 999px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-color);
+            font-size: 13px;
+            padding: 7px 14px;
+            outline: none;
+        }
+
+        .pill-select:focus,
+        .pill-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .pill-btn {
+            border-radius: 999px;
+            border: none;
+            padding: 7px 16px;
+            font-size: 12px;
+            cursor: pointer;
+            background: var(--primary-color);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(0, 212, 255, 0.35);
+            transition: all 0.25s;
+        }
+
+        .pill-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.45);
+        }
+
+        .resource-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+        }
+
+        .resource-card {
+            padding: 14px 15px;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        body.light-mode .resource-card {
+            background: rgba(255, 255, 255, 0.9);
+            color: #0f172a;
+        }
+
+        .res-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .res-meta {
+            font-size: 11px;
+            opacity: 0.78;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .tag-guide {
+            background: rgba(59, 130, 246, 0.22);
+            color: #60a5fa;
+        }
+
+        .tag-manual {
+            background: rgba(34, 197, 94, 0.22);
+            color: #22c55e;
+        }
+
+        .tag-video {
+            background: rgba(244, 114, 182, 0.22);
+            color: #f472b6;
+        }
+
+        .tag-policy {
+            background: rgba(234, 179, 8, 0.22);
+            color: #eab308;
+        }
+
+        .res-actions {
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .res-btn {
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            background: transparent;
+            color: inherit;
+            font-size: 11px;
+            padding: 4px 10px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .res-btn.primary {
+            border-color: transparent;
+            background: linear-gradient(135deg, var(--primary-color), #00a3ff);
+            color: #fff;
+        }
+
+        .checklist {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .checklist li::before {
+            content: "✔";
+            margin-right: 6px;
+            color: #22c55e;
+        }
+
+        .footer {
+            margin-top: 36px;
+            padding: 18px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        body.light-mode .footer {
+            background: rgba(255, 255, 255, 0.18);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .footer p {
+            font-size: 13px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 980px) {
+            .nav-links {
+                display: none;
+            }
+
+            .main-content {
+                padding: 80px 18px 60px;
+            }
+
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+
+            .header,
+            .data-source,
+            .emergency-btn {
+                display: none !important;
+            }
+
+            body {
+                background: #ffffff;
+                color: #000000;
+            }
+
+            .glass-card,
+            .stat-card {
+                background: #ffffff;
+                box-shadow: none;
+                border: 1px solid #dddddd;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">📚 <span>EpiVet India</span></div>
+        <nav class="nav-links">
+            <a href="index.html">Dashboard</a>
+            <a href="diseases.html">Diseases</a>
+            <a href="vaccines.html">Vaccines</a>
+            <a href="reports.html">Reports</a>
+            <a href="analytics.html">Analytics</a>
+            <a href="vets.html">Vets</a>
+            <a href="resources.html" class="active">Resources</a>
+        </nav>
+        <div class="header-controls">
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch">
+                    <input type="checkbox" id="themeToggle" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <div class="data-source">
+        Key docs from ICAR‑NIVEDI, DAHD, FAO & OIE training material (linked externally)
+    </div>
+
+
+
+    <main class="main-content">
+        <section class="page-header">
+            <h1>Guidelines & Training Hub</h1>
+            <p>Central library for outbreak SOPs, national action plans, vaccination manuals and training videos for
+                field vets and para‑vets.</p>
+        </section>
+
+        <section class="summary-grid">
+            <div class="stat-card">
+                <h3>📘 Field Guides</h3>
+                <div class="value" data-target="18">0</div>
+                <div class="label">Rapid reference PDFs for key diseases</div>
+            </div>
+            <div class="stat-card">
+                <h3>📑 SOP & Manuals</h3>
+                <div class="value" data-target="11">0</div>
+                <div class="label">National / state protocols</div>
+            </div>
+            <div class="stat-card">
+                <h3>🎥 Training Videos</h3>
+                <div class="value" data-target="9">0</div>
+                <div class="label">Bio‑security, sampling & PPE</div>
+            </div>
+            <div class="stat-card">
+                <h3>🌐 External Portals</h3>
+                <div class="value" data-target="6">0</div>
+                <div class="label">Authoritative disease information sources</div>
+            </div>
+        </section>
+
+        <section class="layout">
+            <!-- Left: resources -->
+            <div class="glass-card">
+                <div class="card-title">🔍 Browse Resources</div>
+                <div class="filters-row">
+                    <select id="typeFilter" class="pill-select">
+                        <option value="">All Types</option>
+                        <option value="guide">Field Guide</option>
+                        <option value="manual">Manual</option>
+                        <option value="video">Video</option>
+                        <option value="policy">Policy / Plan</option>
+                    </select>
+                    <select id="diseaseFilter" class="pill-select">
+                        <option value="">All Diseases</option>
+                        <option value="LSD">Lumpy Skin Disease</option>
+                        <option value="FMD">Foot and Mouth Disease</option>
+                        <option value="PPR">PPR</option>
+                        <option value="AI">Avian Influenza</option>
+                        <option value="Brucellosis">Brucellosis</option>
+                        <option value="General">General</option>
+                    </select>
+                    <button class="pill-btn" id="resetFilters">Reset</button>
+                </div>
+
+                <ul class="resource-list" id="resourceList">
+                    <!-- Examples: titles and links are generic but realistic -->
+                    <li class="resource-card" data-type="guide" data-disease="LSD">
+                        <div class="res-title">Lumpy Skin Disease – Rapid Field Guide</div>
+                        <div class="res-meta">ICAR‑NIVEDI · PDF · Clinical signs, sampling, control measures.
+                        </div>
+                        <span class="tag tag-guide">Field Guide</span>
+                        <div class="res-actions">
+                            <a class="res-btn primary" href="https://nivedi.res.in" target="_blank">Open PDF</a>
+                            <button class="res-btn" onclick="saveResource('LSD Field Guide')">Save</button>
+                        </div>
+                    </li>
+                    <li class="resource-card" data-type="manual" data-disease="FMD">
+                        <div class="res-title">National FMD Control Programme – Vaccination Manual</div>
+                        <div class="res-meta">DAHD, Govt of India · PDF · Vaccination schedules, cold‑chain & reporting
+                            formats.</div>
+                        <span class="tag tag-manual">Manual</span>
+                        <span class="tag tag-policy">Policy</span>
+                        <div class="res-actions">
+                            <a class="res-btn primary" href="https://dahd.nic.in" target="_blank">Open Manual</a>
+                            <button class="res-btn" onclick="saveResource('FMD CP Manual')">Save</button>
+                        </div>
+                    </li>
+                    <li class="resource-card" data-type="manual" data-disease="PPR">
+                        <div class="res-title">PPR Control & Eradication Programme Guidelines</div>
+                        <div class="res-meta">DAHD / FAO · PDF · Surveillance, vaccination & ring control in sheep and
+                            goats.</div>
+                        <span class="tag tag-manual">Manual</span>
+                        <div class="res-actions">
+                            <a class="res-btn primary" href="https://www.fao.org" target="_blank">Open Guidelines</a>
+                            <button class="res-btn" onclick="saveResource('PPR Guidelines')">Save</button>
+                        </div>
+                    </li>
+                    <li class="resource-card" data-type="guide" data-disease="AI">
+                        <div class="res-title">Avian Influenza Outbreak Investigation Guide</div>
+                        <div class="res-meta">OIE / FAO · PDF · Biosecurity, human safety, culling protocols.
+                        </div>
+                        <span class="tag tag-guide">Field Guide</span>
+                        <div class="res-actions">
+                            <a class="res-btn primary" href="https://www.woah.org" target="_blank">Open Guide</a>
+                            <button class="res-btn" onclick="saveResource('AI Outbreak Guide')">Save</button>
+                        </div>
+                    </li>
+                    <li class="resource-card" data-type="manual" data-disease="Brucellosis">
+                        <div class="res-title">Brucellosis Control – Vaccination & Testing SOP</div>
+                        <div class="res-meta">ICAR / DAHD · PDF · S19/RB51 vaccination, test‑and‑cull and milk ring
+                            test.</div>
+                        <span class="tag tag-manual">Manual</span>
+                        <div class="res-actions">
+                            <a class="res-btn primary" href="https://dahd.nic.in" target="_blank">Open SOP</a>
+                            <button class="res-btn" onclick="saveResource('Brucellosis SOP')">Save</button>
+                        </div>
+                    </li>
+                    <li class="resource-card" data-type="video" data-disease="General">
+                        <div class="res-title">PPE & Sample Collection for Suspected Zoonoses</div>
+                        <div class="res-meta">FAO / WHO · 12‑min training video on donning & doffing PPE, blood and swab
+                            collection.</div>
+                        <span class="tag tag-video">Training Video</span>
+                        <div class="res-actions">
+                            <a class="res-btn primary" href="https://www.youtube.com" target="_blank">Watch</a>
+                            <button class="res-btn" onclick="saveResource('PPE Training Video')">Save</button>
+                        </div>
+                    </li>
+                    <li class="resource-card" data-type="policy" data-disease="General">
+                        <div class="res-title">National Action Plan for Animal Pandemic Preparedness</div>
+                        <div class="res-meta">DAHD / NDMA · Multi‑hazard framework linking animal and human
+                            health.</div>
+                        <span class="tag tag-policy">Policy</span>
+                        <div class="res-actions">
+                            <a class="res-btn primary" href="https://ndma.gov.in" target="_blank">Open Plan</a>
+                            <button class="res-btn" onclick="saveResource('National Action Plan')">Save</button>
+                        </div>
+                    </li>
+                    <li class="resource-card" data-type="guide" data-disease="General">
+                        <div class="res-title">Standard Case Definitions – NADRES Surveillance</div>
+                        <div class="res-meta">ICAR‑NIVEDI · PDF with uniform case definitions for major livestock
+                            diseases.</div>
+                        <span class="tag tag-guide">Field Guide</span>
+                        <div class="res-actions">
+                            <a class="res-btn primary" href="https://nivedi.res.in/Nadresv2/" target="_blank">Open Case
+                                Definitions</a>
+                            <button class="res-btn" onclick="saveResource('NADRES Case Definitions')">Save</button>
+                        </div>
+                    </li>
+                    <li class="resource-card" data-type="video" data-disease="LSD">
+                        <div class="res-title">LSD Vaccination Campaign – Best Practices</div>
+                        <div class="res-meta">ICAR / State AH Dept · Short demo of tagging, dosing and cold chain
+                            handling.</div>
+                        <span class="tag tag-video">Training Video</span>
+                        <div class="res-actions">
+                            <a class="res-btn primary" href="https://www.youtube.com" target="_blank">Watch</a>
+                            <button class="res-btn" onclick="saveResource('LSD Vaccination Video')">Save</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Right: quick checklists -->
+            <div class="glass-card">
+                <div class="card-title">✅ Field Checklists</div>
+                <p style="font-size:13px; opacity:0.85; margin-bottom:6px;">
+                    Use these quick checklists alongside the official PDFs when responding to an outbreak or vaccination
+                    drive.
+                </p>
+                <h4 style="font-size:14px; margin-top:6px; margin-bottom:4px;">Outbreak Visit – Minimum Kit</h4>
+                <ul class="checklist">
+                    <li>PPE: gloves, mask, coverall, boots, sanitizer.</li>
+                    <li>Sampling: vacutainers, swabs, transport media, labels, ice box.</li>
+                    <li>Documentation: case forms, GPS‑enabled phone, consent where needed.</li>
+                </ul>
+
+                <h4 style="font-size:14px; margin-top:10px; margin-bottom:4px;">Vaccination Drive Basics</h4>
+                <ul class="checklist">
+                    <li>Verify cold chain and expiry of vaccine vials before use.</li>
+                    <li>Maintain animal register with tag, owner, dose and batch number.</li>
+                    <li>Report daily coverage to district office or upload via EpiVet reports page.</li>
+                </ul>
+
+                <h4 style="font-size:14px; margin-top:10px; margin-bottom:4px;">Using External Portals</h4>
+                <ul class="checklist">
+                    <li>NADRES for national disease maps and risk forecasts.</li>
+                    <li>FAO / OIE for updated global disease cards and manuals.</li>
+                    <li>State AH websites for latest circulars and local SOP updates.</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 EpiVet India · Resource hub linking to official Indian and international animal health
+            guidance</p>
+    </footer>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('epivet-theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+            themeToggle.checked = true;
+        }
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                document.body.classList.add('light-mode');
+                localStorage.setItem('epivet-theme', 'light');
+            } else {
+                document.body.classList.remove('light-mode');
+                localStorage.setItem('epivet-theme', 'dark');
+            }
+        });
+
+        // Counters
+        function animateCounters() {
+            document.querySelectorAll('.stat-card .value').forEach(el => {
+                const target = parseFloat(el.dataset.target);
+                if (isNaN(target)) return;
+                let current = 0;
+                const step = target / 80;
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        el.textContent = Math.round(target).toLocaleString();
+                        clearInterval(timer);
+                    } else {
+                        el.textContent = Math.round(current).toLocaleString();
+                    }
+                }, 20);
+            });
+        }
+
+        // Filters
+        const typeFilter = document.getElementById('typeFilter');
+        const diseaseFilter = document.getElementById('diseaseFilter');
+        const resetFilters = document.getElementById('resetFilters');
+        const resourceCards = Array.from(document.querySelectorAll('.resource-card'));
+
+        function applyFilters() {
+            const type = typeFilter.value;
+            const disease = diseaseFilter.value;
+
+            resourceCards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                const cardType = card.dataset.type || '';
+                const cardDisease = card.dataset.disease || '';
+                const matchText = true;
+                const matchType = !type || cardType === type;
+                const matchDisease = !disease || cardDisease === disease;
+
+                card.style.display = matchText && matchType && matchDisease ? '' : 'none';
+            });
+        }
+
+
+        typeFilter.addEventListener('change', applyFilters);
+        diseaseFilter.addEventListener('change', applyFilters);
+        resetFilters.addEventListener('click', () => {
+            typeFilter.value = '';
+            diseaseFilter.value = '';
+            applyFilters();
+        });
+
+        // Simple local "save" (just toast)
+        function saveResource(name) {
+            alert(`Saved "${name}" to your local reading list (demo only).`);
+        }
+
+        window.addEventListener('load', () => {
+            animateCounters();
+            applyFilters();
+        });
+    </script>
+</body>
+
+</html>

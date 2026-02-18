@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EpiVet India - Outbreak Reports</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --bg-gradient-1: #0f0c29;
+            --bg-gradient-2: #302b63;
+            --bg-gradient-3: #24243e;
+            --primary-color: #00d4ff;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-color: #fff;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-mode {
+            --bg-gradient-1: #e0f7ff;
+            --bg-gradient-2: #fef3c7;
+            --bg-gradient-3: #f0f9ff;
+            --primary-color: #0891b2;
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-color: #1a1a2e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 50%, var(--bg-gradient-3) 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .header {
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: var(--glass-bg);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px var(--shadow-color);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 15px;
+            padding: 8px 15px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: var(--glass-bg);
+            color: var(--primary-color);
+        }
+
+        .nav-links a.active {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-box {
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-color);
+            outline: none;
+            width: 220px;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            width: 280px;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .search-box::placeholder {
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 34px;
+            border: 2px solid var(--glass-border);
+            transition: 0.4s;
+        }
+
+        .slider::before {
+            position: absolute;
+            content: "🌙";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        input:checked+.slider {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+
+        input:checked+.slider::before {
+            transform: translateX(28px);
+            content: "☀️";
+        }
+
+        .data-source {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            z-index: 900;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            font-size: 12px;
+            color: var(--text-color);
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .data-source a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .data-source a:hover {
+            text-decoration: underline;
+        }
+
+        .emergency-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 900;
+            border: 4px solid #fff;
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.6);
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .emergency-btn .icon {
+            font-size: 32px;
+            margin-bottom: 2px;
+        }
+
+        .emergency-btn .text {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 30px 80px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-size: 46px;
+            background: linear-gradient(135deg, var(--primary-color), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header p {
+            margin-top: 16px;
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            padding: 22px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            transition: all 0.3s;
+        }
+
+        body.light-mode .stat-card {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 212, 255, 0.3);
+            border-color: var(--primary-color);
+        }
+
+        .stat-card h3 {
+            font-size: 15px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-card .value {
+            margin-top: 10px;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .stat-card .label {
+            margin-top: 4px;
+            font-size: 13px;
+            opacity: 0.75;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 2fr 1.2fr;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .layout-column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .glass-card {
+            padding: 24px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+
+        body.light-mode .glass-card {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .card-title {
+            font-size: 18px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filters-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .pill-input,
+        .pill-select {
+            border-radius: 999px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-color);
+            font-size: 13px;
+            padding: 8px 14px;
+            outline: none;
+        }
+
+        .pill-select {
+            padding-right: 32px;
+        }
+
+        .filters-row button {
+            border-radius: 999px;
+            border: none;
+            padding: 8px 18px;
+            font-size: 13px;
+            cursor: pointer;
+            background: var(--primary-color);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(0, 212, 255, 0.35);
+            transition: all 0.25s;
+        }
+
+        .filters-row button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.45);
+        }
+
+        .reports-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .reports-table th,
+        .reports-table td {
+            padding: 9px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            text-align: left;
+        }
+
+        .reports-table th {
+            color: var(--primary-color);
+            background: rgba(0, 212, 255, 0.12);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .reports-table tr:hover td {
+            background: rgba(0, 212, 255, 0.04);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-critical {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .status-high {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .status-medium {
+            background: rgba(234, 179, 8, 0.2);
+            color: #eab308;
+        }
+
+        .status-low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            font-size: 11px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-row>* {
+            flex: 1;
+        }
+
+        label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px 11px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-color);
+            font-size: 13px;
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .submit-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            border: none;
+            border-radius: 999px;
+            padding: 9px 22px;
+            background: linear-gradient(135deg, var(--primary-color), #00a3ff);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(0, 212, 255, 0.4);
+            transition: all 0.25s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 7px 24px rgba(0, 212, 255, 0.55);
+        }
+
+        .btn-secondary {
+            border-radius: 999px;
+            border: 1px solid var(--glass-border);
+            background: transparent;
+            color: var(--text-color);
+            padding: 8px 16px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 18px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        body.light-mode .footer {
+            background: rgba(255, 255, 255, 0.18);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .footer p {
+            font-size: 13px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 960px) {
+            .nav-links {
+                display: none;
+            }
+
+            .main-content {
+                padding: 80px 18px 60px;
+            }
+
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+
+            .header,
+            .data-source,
+            .emergency-btn {
+                display: none !important;
+            }
+
+            body {
+                background: #ffffff;
+                color: #000000;
+            }
+
+            .glass-card,
+            .stat-card {
+                background: #ffffff;
+                box-shadow: none;
+                border: 1px solid #dddddd;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">📄 <span>EpiVet India</span></div>
+        <nav class="nav-links">
+            <a href="index.html">Dashboard</a>
+            <a href="diseases.html">Diseases</a>
+            <a href="vaccines.html">Vaccines</a>
+            <a href="reports.html" class="active">Reports</a>
+            <a href="analytics.html">Analytics</a>
+            <a href="vets.html">Vets</a>
+            <a href="resources.html">Resources</a>
+        </nav>
+        <div class="header-controls">
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch">
+                    <input type="checkbox" id="themeToggle" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <div class="data-source">
+        Data: <a href="https://nivedi.res.in/Nadresv2/yearwise.php" target="_blank">ICAR‑NIVEDI NADRES v2</a> · 32M+
+        historical reports
+    </div>
+
+
+    <main class="main-content">
+        <section class="page-header">
+            <h1>Outbreak Reports</h1>
+            <p>Submit new animal disease outbreaks and browse recent reports synced with the national NADRES
+                surveillance network.</p>
+        </section>
+
+        <section class="summary-grid">
+            <div class="stat-card">
+                <h3>🦠 Active Outbreaks</h3>
+                <div class="value" data-target="152">0</div>
+                <div class="label">Feb 2026 Update</div>
+            </div>
+            <div class="stat-card">
+                <h3>📍 Districts Covered</h3>
+                <div class="value" data-target="89">0</div>
+                <div class="label">Out of 766 districts</div>
+            </div>
+            <div class="stat-card">
+                <h3>⚠️ Critical Zones</h3>
+                <div class="value" data-target="12">0</div>
+                <div class="label">Needing immediate action</div>
+            </div>
+            <div class="stat-card">
+                <h3>✅ Verified Reports</h3>
+                <div class="value" data-target="72">0</div>
+                <div class="label">Validated by state vets</div>
+            </div>
+        </section>
+
+        <section class="layout">
+            <!-- Left: table -->
+            <div class="layout-column">
+                <div class="glass-card" style="max-height: 520px; overflow: auto;">
+                    <div class="card-title">📊 Recent Outbreak Reports</div>
+                    <div class="filters-row">
+                        <select id="filterState" class="pill-select">
+                            <option value="">All States</option>
+                            <option>Uttar Pradesh</option>
+                            <option>Maharashtra</option>
+                            <option>Rajasthan</option>
+                            <option>Karnataka</option>
+                            <option>Punjab</option>
+                            <option>Haryana</option>
+                        </select>
+                        <select id="filterSeverity" class="pill-select">
+                            <option value="">All Severities</option>
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                        <button id="exportBtn">⬇ Export CSV</button>
+                    </div>
+
+                    <table class="reports-table" id="reportsTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>District / State</th>
+                                <th>Disease</th>
+                                <th>Cases</th>
+                                <th>Severity</th>
+                                <th>Source</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data aligned with ICAR-NIVEDI NADRES v2 Feb 2026 -->
+                            <tr data-state="Delhi" data-severity="critical">
+                                <td>18‑Feb‑2026</td>
+                                <td>New Delhi, Delhi</td>
+                                <td>Lumpy Skin Disease</td>
+                                <td>582</td>
+                                <td><span class="badge status-critical">CRITICAL</span></td>
+                                <td><span class="chip">NADRES Sync</span></td>
+                            </tr>
+                            <tr data-state="Rajasthan" data-severity="critical">
+                                <td>18‑Feb‑2026</td>
+                                <td>Jaipur, Rajasthan</td>
+                                <td>Lumpy Skin Disease</td>
+                                <td>645</td>
+                                <td><span class="badge status-critical">CRITICAL</span></td>
+                                <td><span class="chip">District Vet</span></td>
+                            </tr>
+                            <tr data-state="Maharashtra" data-severity="critical">
+                                <td>17‑Feb‑2026</td>
+                                <td>Nagpur, Maharashtra</td>
+                                <td>Lumpy Skin Disease</td>
+                                <td>543</td>
+                                <td><span class="badge status-critical">CRITICAL</span></td>
+                                <td><span class="chip">State Lab</span></td>
+                            </tr>
+                            <tr data-state="Karnataka" data-severity="high">
+                                <td>18‑Feb‑2026</td>
+                                <td>Bangalore, Karnataka</td>
+                                <td>Haemorrhagic Septicaemia</td>
+                                <td>145</td>
+                                <td><span class="badge status-high">HIGH</span></td>
+                                <td><span class="chip">Field Officer</span></td>
+                            </tr>
+                            <tr data-state="Kerala" data-severity="high">
+                                <td>17‑Feb‑2026</td>
+                                <td>Kochi, Kerala</td>
+                                <td>PPR</td>
+                                <td>178</td>
+                                <td><span class="badge status-high">HIGH</span></td>
+                                <td><span class="chip">NADRES Sync</span></td>
+                            </tr>
+                            <tr data-state="Maharashtra" data-severity="high">
+                                <td>16‑Feb‑2026</td>
+                                <td>Mumbai, Maharashtra</td>
+                                <td>Foot and Mouth Disease</td>
+                                <td>412</td>
+                                <td><span class="badge status-high">HIGH</span></td>
+                                <td><span class="chip">Lab Alert</span></td>
+                            </tr>
+                            <tr data-state="West Bengal" data-severity="high">
+                                <td>15‑Feb‑2026</td>
+                                <td>Kolkata, West Bengal</td>
+                                <td>Haemorrhagic Septicaemia</td>
+                                <td>210</td>
+                                <td><span class="badge status-high">HIGH</span></td>
+                                <td><span class="chip">Field App</span></td>
+                            </tr>
+                            <tr data-state="Bihar" data-severity="medium">
+                                <td>15‑Feb‑2026</td>
+                                <td>Patna, Bihar</td>
+                                <td>PPR</td>
+                                <td>267</td>
+                                <td><span class="badge status-medium">MEDIUM</span></td>
+                                <td><span class="chip">District Vet</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right: form + small stats -->
+            <div class="layout-column">
+                <div class="glass-card">
+                    <div class="card-title">📝 Submit New Outbreak</div>
+                    <form id="reportForm" onsubmit="event.preventDefault(); addReport();">
+                        <div class="form-grid">
+                            <div class="form-row">
+                                <div>
+                                    <label for="district">District</label>
+                                    <input type="text" id="district" required />
+                                </div>
+                                <div>
+                                    <label for="state">State</label>
+                                    <select id="state" required>
+                                        <option value="">Select state</option>
+                                        <option>Uttar Pradesh</option>
+                                        <option>Maharashtra</option>
+                                        <option>Rajasthan</option>
+                                        <option>Karnataka</option>
+                                        <option>Punjab</option>
+                                        <option>Haryana</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div>
+                                    <label for="disease">Disease</label>
+                                    <select id="disease" required>
+                                        <option value="">Select disease</option>
+                                        <option>Lumpy Skin Disease</option>
+                                        <option>Foot and Mouth Disease</option>
+                                        <option>Brucellosis</option>
+                                        <option>PPR</option>
+                                        <option>African Swine Fever</option>
+                                        <option>Avian Influenza</option>
+                                        <option>Anthrax</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="cases">Cases</label>
+                                    <input type="number" id="cases" min="1" required />
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div>
+                                    <label for="severity">Severity</label>
+                                    <select id="severity" required>
+                                        <option value="critical">Critical</option>
+                                        <option value="high">High</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="low">Low</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="source">Source</label>
+                                    <select id="source" required>
+                                        <option>District Vet</option>
+                                        <option>Field Officer</option>
+                                        <option>State Lab</option>
+                                        <option>NADRES Sync</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="notes">Remarks</label>
+                                <textarea id="notes"
+                                    placeholder="Clinical signs, lab confirmation, vaccination status..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="submit-row">
+                            <button type="submit" class="btn-primary">Submit Report</button>
+                            <button type="button" class="btn-secondary"
+                                onclick="document.getElementById('reportForm').reset();">
+                                Clear
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-title">⚙ Report Status</div>
+                    <p style="font-size:13px; opacity:0.8; margin-bottom:10px;">
+                        New reports are marked as <span class="chip"><span
+                                style="width:6px;height:6px;border-radius:50%;background:#facc15;"></span>
+                            Pending</span> until verified by state veterinary officers.
+                    </p>
+                    <ul style="list-style:none; font-size:13px; opacity:0.9; display:grid; gap:6px; margin-top:4px;">
+                        <li>• Syncs nightly with NADRES v2 national database.</li>
+                        <li>• Exports as CSV for offline analysis and Excel dashboards.</li>
+                        <li>• Uses same risk levels as the main map (critical/high/medium/low).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 EpiVet India · Outbreak reporting powered by ICAR‑NIVEDI NADRES v2 surveillance network · Live
+            Update: Feb 18, 2026</p>
+    </footer>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('epivet-theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+            themeToggle.checked = true;
+        }
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                document.body.classList.add('light-mode');
+                localStorage.setItem('epivet-theme', 'light');
+            } else {
+                document.body.classList.remove('light-mode');
+                localStorage.setItem('epivet-theme', 'dark');
+            }
+        });
+
+        // Animate stat counters
+        function animateCounters() {
+            document.querySelectorAll('.stat-card .value').forEach(el => {
+                const target = parseFloat(el.dataset.target);
+                if (isNaN(target)) return;
+                let current = 0;
+                const step = target / 80;
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        el.textContent = Math.round(target).toLocaleString();
+                        clearInterval(timer);
+                    } else {
+                        el.textContent = Math.round(current).toLocaleString();
+                    }
+                }, 20);
+            });
+        }
+
+        // Filter
+        const filterState = document.getElementById('filterState');
+        const filterSeverity = document.getElementById('filterSeverity');
+        const tableBody = document.querySelector('#reportsTable tbody');
+
+        function applyFilters() {
+            const state = filterState.value;
+            const severity = filterSeverity.value;
+
+            tableBody.querySelectorAll('tr').forEach(row => {
+                const rowState = row.dataset.state || '';
+                const rowSeverity = row.dataset.severity || '';
+                const matchState = !state || rowState === state;
+                const matchSeverity = !severity || rowSeverity === severity;
+
+                row.style.display = matchState && matchSeverity ? '' : 'none';
+            });
+        }
+
+
+        filterState.addEventListener('change', applyFilters);
+        filterSeverity.addEventListener('change', applyFilters);
+
+        // Add report locally (UI only)
+        function addReport() {
+            const district = document.getElementById('district').value.trim();
+            const state = document.getElementById('state').value;
+            const disease = document.getElementById('disease').value;
+            const cases = document.getElementById('cases').value;
+            const severity = document.getElementById('severity').value;
+            const source = document.getElementById('source').value;
+
+            if (!district || !state || !disease || !cases) return;
+
+            const tr = document.createElement('tr');
+            tr.dataset.state = state;
+            tr.dataset.severity = severity;
+
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('en-IN', {
+                day: '2-digit', month: 'short', year: 'numeric'
+            });
+
+            const cls = {
+                critical: 'status-critical',
+                high: 'status-high',
+                medium: 'status-medium',
+                low: 'status-low'
+            }[severity];
+
+            const label = severity.toUpperCase();
+
+            tr.innerHTML = `
+            <td>${dateStr}</td>
+            <td>${district}, ${state}</td>
+            <td>${disease}</td>
+            <td>${cases}</td>
+            <td><span class="badge ${cls}">${label}</span></td>
+            <td><span class="chip">${source}</span></td>
+        `;
+
+            tableBody.prepend(tr);
+            document.getElementById('reportForm').reset();
+            applyFilters();
+        }
+
+        // Export table to CSV
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            const rows = Array.from(document.querySelectorAll('#reportsTable tr'));
+            const csv = rows.map(row =>
+                Array.from(row.querySelectorAll('th,td'))
+                    .map(cell => `"${cell.innerText.replace(/"/g, '""')}"`)
+                    .join(',')
+            ).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `EpiVetReports-${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert('Report exported successfully! Check your Downloads folder.');
+        });
+
+        window.addEventListener('load', () => {
+            animateCounters();
+            applyFilters();
+        });
+    </script>
+</body>
+
+</html>

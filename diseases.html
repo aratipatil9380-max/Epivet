@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EpiVet India - Disease Encyclopedia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --bg-gradient-1: #0f0c29;
+            --bg-gradient-2: #302b63;
+            --bg-gradient-3: #24243e;
+            --primary-color: #00d4ff;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-color: #fff;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-mode {
+            --bg-gradient-1: #e0f7ff;
+            --bg-gradient-2: #fef3c7;
+            --bg-gradient-3: #f0f9ff;
+            --primary-color: #0891b2;
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-color: #1a1a2e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 50%, var(--bg-gradient-3) 100%);
+            color: var(--text-color);
+            overflow-x: hidden;
+            min-height: 100vh;
+            transition: all 0.5s ease;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px var(--shadow-color);
+        }
+
+        .header {
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: var(--glass-bg);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px var(--shadow-color);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 15px;
+            transition: all 0.3s;
+            padding: 8px 15px;
+            border-radius: 10px;
+        }
+
+        .nav-links a:hover {
+            background: var(--glass-bg);
+            color: var(--primary-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links a.active {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-box {
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            color: var(--text-color);
+            outline: none;
+            width: 200px;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            width: 280px;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .search-box::placeholder {
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: 0.4s;
+            border-radius: 34px;
+            border: 2px solid var(--glass-border);
+        }
+
+        .slider::before {
+            position: absolute;
+            content: "🌙";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        input:checked+.slider {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+
+        input:checked+.slider::before {
+            transform: translateX(28px);
+            content: "☀️";
+        }
+
+        .data-source {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            font-size: 12px;
+            color: var(--text-color);
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .data-source a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .data-source a:hover {
+            text-decoration: underline;
+        }
+
+        .emergency-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1001;
+            border: 4px solid #fff;
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.6), 0 0 0 0 rgba(239, 68, 68, 0.7);
+            animation: pulse 2s infinite;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .emergency-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px rgba(239, 68, 68, 0.8);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 8px 32px rgba(239, 68, 68, 0.6), 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+
+            50% {
+                box-shadow: 0 8px 32px rgba(239, 68, 68, 0.6), 0 0 0 20px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 8px 32px rgba(239, 68, 68, 0.6), 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        .emergency-btn .icon {
+            font-size: 32px;
+            margin-bottom: 2px;
+        }
+
+        .emergency-btn .text {
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .main-content {
+            padding: 100px 30px 80px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-header h1 {
+            font-size: 48px;
+            background: linear-gradient(135deg, var(--primary-color), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .page-header p {
+            font-size: 18px;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .disease-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .stat-card {
+            padding: 25px;
+            border-radius: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        body.light-mode .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 212, 255, 0.3);
+            border-color: var(--primary-color);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .stat-card h3 {
+            font-size: 16px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin: 15px 0;
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            color: var(--text-color);
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+        }
+
+        .diseases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .disease-card {
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            opacity: 1;
+        }
+
+        body.light-mode .disease-card {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .disease-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4);
+            border-color: var(--primary-color);
+        }
+
+        .disease-card.hidden {
+            display: none;
+        }
+
+        .disease-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .disease-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #fff;
+        }
+
+        .lumpy {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .fmd {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+        }
+
+        .brucellosis {
+            background: linear-gradient(135deg, #eab308, #ca8a04);
+        }
+
+        .ppr {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+
+        .asf {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .avian {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+        }
+
+        .anthrax {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+
+        .hs {
+            background: linear-gradient(135deg, #ec4899, #db2777);
+        }
+
+        .bvd {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .ibd {
+            background: linear-gradient(135deg, #f59e0d, #d97706);
+        }
+
+        .newcastle {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .rabies {
+            background: linear-gradient(135deg, #7c2d12, #9a3412);
+        }
+
+        .jd {
+            background: linear-gradient(135deg, #a855f7, #9333ea);
+        }
+
+        .theileriosis {
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+        }
+
+        .disease-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .disease-risk {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .risk-critical {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .risk-high {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+            border: 1px solid rgba(249, 115, 22, 0.3);
+        }
+
+        .risk-medium {
+            background: rgba(234, 179, 8, 0.2);
+            color: #eab308;
+            border: 1px solid rgba(234, 179, 8, 0.3);
+        }
+
+        .risk-low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .disease-section h4 {
+            color: var(--primary-color);
+            margin: 20px 0 10px;
+            font-size: 18px;
+        }
+
+        .symptoms-list,
+        .treatment-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .symptoms-list li,
+        .treatment-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            opacity: 0.9;
+        }
+
+        .symptoms-list li::before {
+            content: "•";
+            color: #ef4444;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .treatment-list li::before {
+            content: "✓";
+            color: #22c55e;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .quick-actions {
+            padding: 40px 30px;
+            max-width: 1400px;
+            margin: 50px auto 0;
+            background: transparent;
+        }
+
+        .quick-actions h2 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #fff;
+            display: block;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        body.light-mode .action-card {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4);
+            border-color: var(--primary-color);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .action-card .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 10px rgba(0, 212, 255, 0.3));
+        }
+
+        .action-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .action-card p {
+            font-size: 14px;
+            opacity: 0.8;
+            color: var(--text-color);
+        }
+
+        .footer {
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.03);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        body.light-mode .footer {
+            background: rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .footer p {
+            color: var(--text-color);
+            opacity: 0.7;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .disease-stats {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .search-box {
+                width: 120px;
+            }
+
+            .search-box:focus {
+                width: 160px;
+            }
+
+            .emergency-btn {
+                width: 70px;
+                height: 70px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .emergency-btn .icon {
+                font-size: 28px;
+            }
+
+            .diseases-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .main-content {
+                padding: 80px 20px 60px;
+            }
+
+            .filter-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">
+            🩺 <span>EpiVet India</span>
+        </div>
+        <nav class="nav-links">
+            <a href="index.html">Dashboard</a>
+            <a href="diseases.html" class="active">Diseases</a>
+            <a href="vaccines.html">Vaccines</a>
+            <a href="reports.html">Reports</a>
+            <a href="analytics.html">Analytics</a>
+            <a href="vets.html">Vets</a>
+            <a href="resources.html">Resources</a>
+        </nav>
+        <div class="header-controls">
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch">
+                    <input type="checkbox" id="themeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <div class="data-source">
+        Data: <a href="https://nivedi.res.in/Nadresv2/yearwise.php" target="_blank">ICAR-NIVEDI NADRES v2</a>
+        Updated Dec 2025
+    </div>
+
+
+
+    <div class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>Disease Encyclopedia</h1>
+                <p>Comprehensive guide to major livestock diseases in India (Source: ICAR-NIVEDI NADRES v2)</p>
+            </div>
+            <div class="stats-badge">
+                <span id="diseaseCount">7</span> Global Notifiable Diseases
+            </div>
+        </div>
+        <section class="disease-stats">
+            <div class="stat-card">
+                <h3>🦠 <span>Active Diseases</span></h3>
+                <div class="value" data-target="14">0</div>
+                <div class="label">Tracked Nationwide</div>
+            </div>
+            <div class="stat-card">
+                <h3>📊 <span>Critical Zones</span></h3>
+                <div class="value" data-target="18">0</div>
+                <div class="label">High Risk Areas</div>
+            </div>
+            <div class="stat-card">
+                <h3>🩺 <span>Total Cases</span></h3>
+                <div class="value" data-target="28,456">0</div>
+                <div class="label">Dec 2025 YTD</div>
+            </div>
+            <div class="stat-card">
+                <h3>🗺️ <span>Affected Districts</span></h3>
+                <div class="value" data-target="156">0</div>
+                <div class="label">Out of 766</div>
+            </div>
+        </section>
+
+        <div class="filter-tabs">
+            <button class="filter-btn active" data-filter="all">All Diseases</button>
+            <button class="filter-btn" data-filter="critical">Critical</button>
+            <button class="filter-btn" data-filter="high">High</button>
+            <button class="filter-btn" data-filter="medium">Medium</button>
+            <button class="filter-btn" data-filter="low">Low</button>
+            <button class="filter-btn" data-filter="cattle">Cattle</button>
+            <button class="filter-btn" data-filter="poultry">Poultry</button>
+            <button class="filter-btn" data-filter="sheepgoat">Sheep/Goat</button>
+        </div>
+
+        <section class="diseases-grid">
+            <!-- Lumpy Skin Disease -->
+            <div class="disease-card" data-risk="critical" data-species="cattle">
+                <div class="disease-header">
+                    <div class="disease-icon lumpy">🐄</div>
+                    <div>
+                        <div class="disease-name">Lumpy Skin Disease</div>
+                        <span class="disease-risk risk-critical">CRITICAL</span>
+                    </div>
+                </div>
+                <div class="disease-section">
+                    <h4>Symptoms</h4>
+                    <ul class="symptoms-list">
+                        <li>Fever, loss of appetite, reduced milk production</li>
+                        <li>Skin nodules (2-5cm) across body</li>
+                        <li>Swollen lymph nodes, lameness</li>
+                        <li>Eye/nasal discharge, salivation</li>
+                        <li>Emaciation in severe cases</li>
+                    </ul>
+                </div>
+                <div class="disease-section">
+                    <h4>Treatment & Control</h4>
+                    <ul class="treatment-list">
+                        <li>Isolation of infected animals immediately</li>
+                        <li>LSR vaccine (Nepal strain) administration</li>
+                        <li>Supportive therapy: antibiotics, anti-inflammatories</li>
+                        <li>Tick control and vector management</li>
+                        <li>Slaughter of severely affected animals</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Foot and Mouth Disease -->
+            <div class="disease-card" data-risk="high" data-species="cattle">
+                <div class="disease-header">
+                    <div class="disease-icon fmd">🐮</div>
+                    <div>
+                        <div class="disease-name">Foot and Mouth Disease</div>
+                        <span class="disease-risk risk-high">HIGH</span>
+                    </div>
+                </div>
+                <div class="disease-section">
+                    <h4>Symptoms</h4>
+                    <ul class="symptoms-list">
+                        <li>Blisters on mouth, tongue, feet</li>
+                        <li>Excessive salivation ("slobbering")</li>
+                        <li>Lameness, reluctance to move</li>
+                        <li>Fever (104-106°F), reduced milk yield</li>
+                        <li>Heart issues in young animals</li>
+                    </ul>
+                </div>
+                <div class="disease-section">
+                    <h4>Treatment & Control</h4>
+                    <ul class="treatment-list">
+                        <li>FMD trivalent vaccine every 6 months</li>
+                        <li>Strict movement quarantine</li>
+                        <li>Foot baths with 2-5% CuSO4</li>
+                        <li>Soft bedding, pain management</li>
+                        <li>Disinfection of premises</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Brucellosis -->
+            <div class="disease-card" data-risk="medium" data-species="cattle">
+                <div class="disease-header">
+                    <div class="disease-icon brucellosis">🥛</div>
+                    <div>
+                        <div class="disease-name">Brucellosis</div>
+                        <span class="disease-risk risk-medium">MEDIUM</span>
+                    </div>
+                </div>
+                <div class="disease-section">
+                    <h4>Symptoms</h4>
+                    <ul class="symptoms-list">
+                        <li>Abortion in last 3rd of pregnancy</li>
+                        <li>Stillbirths, weak calves</li>
+                        <li>Reduced milk production</li>
+                        <li>Infertility, irregular estrus</li>
+                        <li>No clinical signs in males usually</li>
+                    </ul>
+                </div>
+                <div class="disease-section">
+                    <h4>Treatment & Control</h4>
+                    <ul class="treatment-list">
+                        <li>RB51/S19 vaccination in calves</li>
+                        <li>Test and slaughter/cull policy</li>
+                        <li>Hygiene in calving areas</li>
+                        <li>Milk pasteurization mandatory</li>
+                        <li>Bull testing and replacement</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- PPR -->
+            <div class="disease-card" data-risk="medium" data-species="sheepgoat">
+                <div class="disease-header">
+                    <div class="disease-icon ppr">🐐</div>
+                    <div>
+                        <div class="disease-name">Peste des Petits Ruminants (PPR)</div>
+                        <span class="disease-risk risk-medium">MEDIUM</span>
+                    </div>
+                </div>
+                <div class="disease-section">
+                    <h4>Symptoms</h4>
+                    <ul class="symptoms-list">
+                        <li>High fever (104-105°F), depression</li>
+                        <li>Mucopurulent nasal/ocular discharge</li>
+                        <li>Erosive stomatitis, diarrhea</li>
+                        <li>Pneumonia, bronchopneumonia</li>
+                        <li>Mortality 30-90% in naïve herds</li>
+                    </ul>
+                </div>
+                <div class="disease-section">
+                    <h4>Treatment & Control</h4>
+                    <ul class="treatment-list">
+                        <li>Sungri96 vaccine annually</li>
+                        <li>Strict biosecurity measures</li>
+                        <li>Supportive therapy + antibiotics</li>
+                        <li>Quarantine new introductions 30 days</li>
+                        <li>India PPR-free target: 2026</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- African Swine Fever -->
+            <div class="disease-card" data-risk="critical" data-species="poultry">
+                <div class="disease-header">
+                    <div class="disease-icon asf">🐖</div>
+                    <div>
+                        <div class="disease-name">African Swine Fever</div>
+                        <span class="disease-risk risk-critical">CRITICAL</span>
+                    </div>
+                </div>
+                <div class="disease-section">
+                    <h4>Symptoms</h4>
+                    <ul class="symptoms-list">
+                        <li>High fever (106°F), anorexia</li>
+                        <li>Red skin blotching, hemorrhages</li>
+                        <li>Diarrhea (bloody), vomiting</li>
+                        <li>Labored breathing, abortions</li>
+                        <li>Acute mortality up to 100%</li>
+                    </ul>
+                </div>
+                <div class="disease-section">
+                    <h4>Treatment & Control</h4>
+                    <ul class="treatment-list">
+                        <li>No vaccine available in India</li>
+                        <li>Total depopulation of infected farms</li>
+                        <li>24-month standstill period</li>
+                        <li>Swill feeding ban enforced</li>
+                        <li>Wild boar surveillance critical</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Avian Influenza -->
+            <div class="disease-card" data-risk="medium" data-species="poultry">
+                <div class="disease-header">
+                    <div class="disease-icon avian">🐔</div>
+                    <div>
+                        <div class="disease-name">Avian Influenza (Bird Flu)</div>
+                        <span class="disease-risk risk-medium">MEDIUM</span>
+                    </div>
+                </div>
+                <div class="disease-section">
+                    <h4>Symptoms</h4>
+                    <ul class="symptoms-list">
+                        <li>Sudden drop in egg production</li>
+                        <li>Swelling of head/eyes/combs</li>
+                        <li>Twisted neck (torticollis)</li>
+                        <li>Bloody diarrhea, respiratory distress</li>
+                        <li>High mortality in layers (H5N1)</li>
+                    </ul>
+                </div>
+                <div class="disease-section">
+                    <h4>Treatment & Control</h4>
+                    <ul class="treatment-list">
+                        <li>Culling within 3km radius</li>
+                        <li>Disinfection + litter disposal</li>
+                        <li>Vaccination (H5N1) in high-risk areas</li>
+                        <li>Wild bird surveillance program</li>
+                        <li>Live bird market regulations</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Anthrax -->
+            <div class="disease-card" data-risk="low" data-species="cattle">
+                <div class="disease-header">
+                    <div class="disease-icon anthrax">☠️</div>
+                    <div>
+                        <div class="disease-name">Anthrax</div>
+                        <span class="disease-risk risk-low">LOW</span>
+                    </div>
+                </div>
+                <div class="disease-section">
+                    <h4>Symptoms</h4>
+                    <ul class="symptoms-list">
+                        <li>Sudden death (bloody froth)</li>
+                        <li>High fever, staggering gait</li>
+                        <li>Bloating without rigor mortis</li>
+                        <li>Dark "tar-like" blood from orifices</li>
+                        <li>Splenic enlargement (3x normal)</li>
+                    </ul>
+                </div>
+                <div class="disease-section">
+                    <h4>Treatment & Control</h4>
+                    <ul class="treatment-list">
+                        <li>Sterne vaccine annually</li>
+                        <li>Penicillin immediately on suspicion</li>
+                        <li>Do NOT open carcass (spore formation)</li>
+                        <li>Deep burial + lime treatment</li>
+                        <li>Soil pH monitoring (alkaline risk)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Hemorrhagic Septicemia -->
+            <div class="disease-card" data-risk="high" data-species="cattle">
+                <div class="disease-header">
+                    <div class="disease-icon hs">🐃</div>
+                    <div>
+                        <div class="disease-name">Haemorrhagic Septicaemia (HS)</div>
+                        <span class="disease-risk risk-high">HIGH (Feb 2026)</span>
+                    </div>
+                </div>
+                <div class="disease-section">
+                    <h4>Symptoms</h4>
+                    <ul class="symptoms-list">
+                        <li>Sudden high fever (104-106°F)</li>
+                        <li>Severe respiratory distress</li>
+                        <li>Throat swelling, salivation</li>
+                        <li>Subcutaneous edema (neck, brisket)</li>
+                        <li>Mortality 70-80% untreated</li>
+                    </ul>
+                </div>
+                <div class="disease-section">
+                    <h4>Treatment & Control</h4>
+                    <ul class="treatment-list">
+                        <li>Oil-adjuvant HS vaccine annually</li>
+                        <li>Immediate antibiotics (Oxytetracycline)</li>
+                        <li>Anti-inflammatory drugs</li>
+                        <li>Monsoon season vaccination critical</li>
+                        <li>Water buffalo most susceptible</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bovine Viral Diarrhea -->
+            <div class="disease-card" data-risk="medium" data-species="cattle">
+                <div class="disease-header">
+                    <div class="disease-icon bvd">🐄</div>
+                    <div>
+                        <div class="disease-name">Bovine Viral Diarrhea (BVD)</div>
+                        <span class="disease-risk risk-medium">MEDIUM</span>
+                    </div>
+                </div>
+                <div class="disease-section">
+                    <h4>Symptoms</h4>
+                    <ul class="symptoms-list">
+                        <li>Diarrhea (may be bloody)</li>
+                        <li>Fever, depression, nasal discharge</li>
+                        <li>Reduced milk production</li>
+                        <li>Persistent infections (PI calves)</li>
+                        <li>Reproductive losses</li>
+                    </ul>
+                </div>
+                <div class="disease-section">
+                    <h4>Treatment & Control</h4>
+                    <ul class="treatment-list">
+                        <li>BVD vaccine (killed/modified live)</li>
+                        <li>Ear notch testing for PI animals</li>
+                        <li>Cull persistently infected calves</li>
+                        <li>Closed herd policy recommended</li>
+                        <li>Semens testing mandatory</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Infectious Bursal Disease -->
+            <div class="disease-card" data-risk="high" data-species="poultry">
+                <div class="disease-header">
+                    <div class="disease-icon ibd">🐥</div>
+                    <div>
+                        <div class="disease-name">Infectious Bursal Disease (IBD)</div>
+                        <span class="disease-risk risk-high">HIGH</span>
+                    </div>
+                </div>
+                <div class="disease-section">
+                    <h4>Symptoms</h4>
+                    <ul class="symptoms-list">
+                        <li>Watery white diarrhea</li>
+                        <li>Ruffled feathers, depression</li>
+                        <li>Tremors, sternal bursitis</li>
+                        <li>Immunosuppression (7-21 days)</li>
+                        <li>Mortality 20-60% in broilers</li>
+                    </ul>
+                </div>
+                <div class="disease-section">
+                    <h4>Treatment & Control</h4>
+                    <ul class="treatment-list">
+                        <li>Intermediate/variant vaccines D-78</li>
+                        <li>Broiler vaccination day 14</li>
+                        <li>All-in-all-out farming</li>
+                        <li>Litter management critical</li>
+                        <li>Antibiotics for secondary infections</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Newcastle Disease -->
+            <div class="disease-card" data-risk="critical" data-species="poultry">
+                <div class="disease-header">
+                    <div class="disease-icon newcastle">🐓</div>
+                    <div>
+                        <div class="disease-name">Newcastle Disease (Ranikhet)</div>
+                        <span class="disease-risk risk-critical">CRITICAL</span>
+                    </div>
+                </div>
+                <div class="disease-section">
+                    <h4>Symptoms</h4>
+                    <ul class="symptoms-list">
+                        <li>Respiratory distress, gasping</li>
+                        <li>Greenish diarrhea</li>
+                        <li>Torticollis (twisted neck)</li>
+                        <li>Swollen head (velogenic form)</li>
+                        <li>Nearly 100% mortality (VVND)</li>
+                    </ul>
+                </div>
+                <div class="disease-section">
+                    <h4>Treatment & Control</h4>
+                    <ul class="treatment-list">
+                        <li>LaSota/R2B vaccine schedule</li>
+                        <li>Day 1, 7, 21 vaccination program</li>
+                        <li>Strict biosecurity - wild birds</li>
+                        <li>Reportable disease (OIE List A)</li>
+                        <li>Complete farm depopulation VVND</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Rabies -->
+            <div class="disease-card" data-risk="critical" data-species="cattle">
+                <div class="disease-header">
+                    <div class="disease-icon rabies">🦇</div>
+                    <div>
+                        <div class="disease-name">Rabies</div>
+                        <span class="disease-risk risk-critical">CRITICAL</span>
+                    </div>
+                </div>
+                <div class="disease-section">
+                    <h4>Symptoms</h4>
+                    <ul class="symptoms-list">
+                        <li>Excessive salivation ("mad dog")</li>
+                        <li>Paralysis, bellowing</li>
+                        <li>Hydrophobia, aggression</li>
+                        <li>Self-mutilation</li>
+                        <li>100% fatal once clinical</li>
+                    </ul>
+                </div>
+                <div class="disease-section">
+                    <h4>Treatment & Control</h4>
+                    <ul class="treatment-list">
+                        <li>Pre-exposure vaccination dogs</li>
+                        <li>Post-exposure prophylaxis humans</li>
+                        <li>Animal vaccination campaigns</li>
+                        <li>Stray dog population control</li>
+                        <li>Immediate reporting mandatory</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Johne's Disease -->
+            <div class="disease-card" data-risk="medium" data-species="cattle">
+                <div class="disease-header">
+                    <div class="disease-icon jd">🐄</div>
+                    <div>
+                        <div class="disease-name">Johne's Disease (JD)</div>
+                        <span class="disease-risk risk-medium">MEDIUM</span>
+                    </div>
+                </div>
+                <div class="disease-section">
+                    <h4>Symptoms</h4>
+                    <ul class="symptoms-list">
+                        <li>Chronic weight loss despite appetite</li>
+                        <li>Progressive diarrhea (cow-pat type)</li>
+                        <li>Emaciation, bottle-jaw edema</li>
+                        <li>Reduced milk yield (30-50%)</li>
+                        <li>2-4 year incubation period</li>
+                    </ul>
+                </div>
+                <div class="disease-section">
+                    <h4>Treatment & Control</h4>
+                    <ul class="treatment-list">
+                        <li>No effective treatment</li>
+                        <li>Indigenous JD vaccine (4+ yrs)</li>
+                        <li>Calving hygiene paramount</li>
+                        <li>Manure management critical</li>
+                        <li>ELISA screening + culling</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Theileriosis -->
+            <div class="disease-card" data-risk="high" data-species="cattle">
+                <div class="disease-header">
+                    <div class="disease-icon theileriosis">🦟</div>
+                    <div>
+                        <div class="disease-name">Tropical Theileriosis</div>
+                        <span class="disease-risk risk-high">HIGH</span>
+                    </div>
+                </div>
+                <div class="disease-section">
+                    <h4>Symptoms</h4>
+                    <ul class="symptoms-list">
+                        <li>High fever (105-107°F)</li>
+                        <li>Anaemia, jaundice</li>
+                        <li>Swollen lymph nodes</li>
+                        <li>Laboured breathing, weakness</li>
+                        <li>Exotic/crossbred most susceptible</li>
+                    </ul>
+                </div>
+                <div class="disease-section">
+                    <h4>Treatment & Control</h4>
+                    <ul class="treatment-list">
+                        <li>Buparvaquone (2.5mg/kg IV)</li>
+                        <li>Tick control (Deltamethrin)</li>
+                        <li>Rakshavac/RakshaTDAR vaccine</li>
+                        <li>Crossbred calf vaccination</li>
+                        <li>Weekly tick inspection</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="quick-actions">
+            <h2>Quick Actions</h2>
+            <div class="actions-grid">
+                <a href="reports.html" class="action-card">
+                    <div class="icon">📝</div>
+                    <h3>Report Outbreak</h3>
+                    <p>Submit new disease outbreak information</p>
+                </a>
+                <a href="vets.html" class="action-card">
+                    <div class="icon">🏥</div>
+                    <h3>Find Nearby Vet</h3>
+                    <p>Locate veterinary services</p>
+                </a>
+                <a href="vaccines.html" class="action-card">
+                    <div class="icon">💉</div>
+                    <h3>Vaccination Schedule</h3>
+                    <p>Check your herd's vaccination status</p>
+                </a>
+                <a href="dashboard.html" class="action-card">
+                    <div class="icon">📊</div>
+                    <h3>Live Dashboard</h3>
+                    <p>View disease trends & predictions</p>
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 EpiVet India | Data: ICAR-NIVEDI NADRES v2 | 32M+ Reports | Covering All 36 States/UTs
+        </p>
+    </footer>
+
+    <script>
+        // Filter tabs
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                filterDiseases(currentFilter);
+            });
+        });
+
+        let currentFilter = 'all';
+
+        function filterDiseases(filter) {
+            const cards = document.querySelectorAll('.disease-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const risk = card.dataset.risk;
+                const species = card.dataset.species;
+
+                const matchesFilter = filter === 'all' ||
+                    (filter === risk) ||
+                    (filter === species);
+
+                if (matchesFilter) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            // Update stats based on visible cards
+            document.querySelector('[data-target="14"]').textContent = visibleCount.toString();
+        }
+
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        themeToggle.addEventListener('change', function () {
+            if (this.checked) {
+                body.classList.add('light-mode');
+                localStorage.setItem('epivet-theme', 'light');
+            } else {
+                body.classList.remove('light-mode');
+                localStorage.setItem('epivet-theme', 'dark');
+            }
+        });
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('epivet-theme');
+        if (savedTheme === 'light') {
+            themeToggle.checked = true;
+            body.classList.add('light-mode');
+        }
+
+        // Enhanced stats counter animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-card .value');
+            counters.forEach(counter => {
+                const target = parseInt(counter.dataset.target);
+                const increment = target / 100;
+                let current = 0;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        counter.textContent = target.toLocaleString();
+                        clearInterval(timer);
+                    } else {
+                        counter.textContent = Math.floor(current).toLocaleString();
+                    }
+                }, 20);
+            });
+        }
+
+        // Initialize
+        window.addEventListener('load', function () {
+            animateCounters();
+            filterDiseases('all');
+        });
+    </script>
+</body>
+
+</html>

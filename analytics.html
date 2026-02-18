@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EpiVet India - Analytics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --bg-gradient-1: #0f0c29;
+            --bg-gradient-2: #302b63;
+            --bg-gradient-3: #24243e;
+            --primary-color: #00d4ff;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-color: #fff;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-mode {
+            --bg-gradient-1: #e0f7ff;
+            --bg-gradient-2: #fef3c7;
+            --bg-gradient-3: #f0f9ff;
+            --primary-color: #0891b2;
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-color: #1a1a2e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 50%, var(--bg-gradient-3) 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .header {
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: var(--glass-bg);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px var(--shadow-color);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 15px;
+            padding: 8px 15px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: var(--glass-bg);
+            color: var(--primary-color);
+        }
+
+        .nav-links a.active {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-box {
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-color);
+            outline: none;
+            width: 220px;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            width: 280px;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .search-box::placeholder {
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 34px;
+            border: 2px solid var(--glass-border);
+            transition: 0.4s;
+        }
+
+        .slider::before {
+            position: absolute;
+            content: "🌙";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        input:checked+.slider {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+
+        input:checked+.slider::before {
+            transform: translateX(28px);
+            content: "☀️";
+        }
+
+        .data-source {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            z-index: 900;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            font-size: 12px;
+            color: var(--text-color);
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .data-source a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .data-source a:hover {
+            text-decoration: underline;
+        }
+
+        .emergency-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 900;
+            border: 4px solid #fff;
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.6);
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .emergency-btn .icon {
+            font-size: 32px;
+            margin-bottom: 2px;
+        }
+
+        .emergency-btn .text {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 30px 80px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            font-size: 40px;
+            background: linear-gradient(135deg, var(--primary-color), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header p {
+            margin-top: 10px;
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .filters-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .pill-select,
+        .pill-input {
+            border-radius: 999px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-color);
+            font-size: 13px;
+            padding: 7px 14px;
+            outline: none;
+        }
+
+        .pill-select:focus,
+        .pill-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .pill-btn {
+            border-radius: 999px;
+            border: none;
+            padding: 7px 16px;
+            font-size: 12px;
+            cursor: pointer;
+            background: var(--primary-color);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(0, 212, 255, 0.35);
+            transition: all 0.25s;
+        }
+
+        .pill-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.45);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            padding: 20px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        body.light-mode .kpi-card {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .kpi-label {
+            font-size: 13px;
+            opacity: 0.78;
+        }
+
+        .kpi-value {
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .kpi-sub {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .kpi-trend {
+            margin-top: 4px;
+            font-size: 12px;
+            padding: 4px 9px;
+            border-radius: 999px;
+            display: inline-block;
+            backdrop-filter: blur(8px);
+        }
+
+        .trend-up {
+            background: rgba(34, 197, 94, 0.22);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+
+        .trend-down {
+            background: rgba(239, 68, 68, 0.22);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1.6fr 1.1fr;
+            gap: 22px;
+            align-items: flex-start;
+        }
+
+        .glass-card {
+            padding: 20px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+
+        body.light-mode .glass-card {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .card-title {
+            font-size: 17px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .mini-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .mini-table thead {
+            background: rgba(15, 23, 42, 0.7);
+        }
+
+        body.light-mode .mini-table thead {
+            background: rgba(148, 163, 184, 0.3);
+        }
+
+        .mini-table th,
+        .mini-table td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+        }
+
+        .pill-badge {
+            padding: 2px 7px;
+            border-radius: 999px;
+            font-size: 11px;
+        }
+
+        .badge-critical {
+            background: rgba(248, 113, 113, 0.2);
+            color: #fecaca;
+        }
+
+        .badge-high {
+            background: rgba(249, 115, 22, 0.2);
+            color: #fed7aa;
+        }
+
+        .badge-medium {
+            background: rgba(250, 204, 21, 0.2);
+            color: #fef9c3;
+        }
+
+        .badge-low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #bbf7d0;
+        }
+
+        .insight-list {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .insight-list li::before {
+            content: "➤";
+            margin-right: 6px;
+            color: var(--primary-color);
+        }
+
+        .footer {
+            margin-top: 36px;
+            padding: 18px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        body.light-mode .footer {
+            background: rgba(255, 255, 255, 0.18);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .footer p {
+            font-size: 13px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 980px) {
+            .nav-links {
+                display: none;
+            }
+
+            .main-content {
+                padding: 80px 18px 60px;
+            }
+
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+
+            .header,
+            .data-source,
+            .emergency-btn {
+                display: none !important;
+            }
+
+            body {
+                background: #ffffff;
+                color: #000000;
+            }
+
+            .glass-card,
+            .kpi-card {
+                background: #ffffff;
+                box-shadow: none;
+                border: 1px solid #dddddd;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">📈 <span>EpiVet India</span></div>
+        <nav class="nav-links">
+            <a href="index.html">Dashboard</a>
+            <a href="diseases.html">Diseases</a>
+            <a href="vaccines.html">Vaccines</a>
+            <a href="reports.html">Reports</a>
+            <a href="analytics.html" class="active">Analytics</a>
+            <a href="vets.html">Vets</a>
+            <a href="resources.html">Resources</a>
+        </nav>
+        <div class="header-controls">
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch">
+                    <input type="checkbox" id="themeToggle" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <div class="data-source">
+        Analytics derived from ICAR-NIVEDI NADRES‑style outbreak data (Feb 18, 2026).
+    </div>
+
+
+
+    <main class="main-content">
+        <section class="page-header">
+            <h1>Disease Trends & Hotspots</h1>
+            <p>Explore time trends, top affected districts and risk scores generated from your outbreak reports and
+                vaccination data.</p>
+        </section>
+
+        <!-- Filters -->
+        <section class="filters-row">
+            <select id="diseaseFilter" class="pill-select">
+                <option value="">All Diseases</option>
+                <option value="Lumpy Skin Disease">Lumpy Skin Disease</option>
+                <option value="Foot and Mouth Disease">FMD</option>
+                <option value="Peste des petits ruminants">PPR</option>
+                <option value="Avian Influenza">Avian Influenza</option>
+                <option value="Brucellosis">Brucellosis</option>
+                <option value="Anthrax">Anthrax</option>
+            </select>
+            <select id="stateFilter" class="pill-select">
+                <option value="">All States</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Karnataka">Karnataka</option>
+            </select>
+            <select id="timeFilter" class="pill-select">
+                <option value="30">Last 30 days</option>
+                <option value="90">Last 90 days</option>
+                <option value="365">Last year</option>
+            </select>
+            <button class="pill-btn" id="applyFilters">Apply</button>
+            <button class="pill-btn" id="resetFilters" style="background:#64748b;">Reset</button>
+        </section>
+
+        <!-- KPIs -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Total cases (filtered)</div>
+                <div class="kpi-value" id="kpiTotalCases">0</div>
+                <div class="kpi-sub">Sum of all outbreaks in the filter window.</div>
+                <span class="kpi-trend trend-up" id="kpiTotalCasesTrend">+8% vs prev. period</span>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Median cases per district</div>
+                <div class="kpi-value" id="kpiMedian">0</div>
+                <div class="kpi-sub">Helps see if surge is broad‑based or driven by few hotspots.</div>
+                <span class="kpi-trend trend-down" id="kpiMedianTrend">‑3% vs prev. period</span>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Districts in critical status</div>
+                <div class="kpi-value" id="kpiCritical">0</div>
+                <div class="kpi-sub">Districts with 500+ demo cases tagged “critical”.</div>
+                <span class="kpi-trend trend-up" id="kpiCriticalTrend">+2 hotspots</span>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Estimated vaccination coverage</div>
+                <div class="kpi-value" id="kpiCoverage">0%</div>
+                <div class="kpi-sub">Simple proxy using demo vaccine multiplier per outbreak.</div>
+                <span class="kpi-trend trend-up" id="kpiCoverageTrend">+5 pts vs prev.</span>
+            </div>
+        </section>
+
+        <!-- Layout: table + insights -->
+        <section class="layout">
+            <div class="glass-card">
+                <div class="card-title">Top affected districts (demo)</div>
+                <table class="mini-table" id="topTable">
+                    <thead>
+                        <tr>
+                            <th>District</th>
+                            <th>State</th>
+                            <th>Disease</th>
+                            <th>Cases</th>
+                            <th>Risk</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Filled by JS from outbreakData snippet logic -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-title">Auto‑generated insights</div>
+                <ul class="insight-list" id="insightList">
+                    <li>Use the filters above to see how risk shifts between states and diseases.</li>
+                    <li>Focus vaccination and vet deployment first on districts marked “critical”.</li>
+                    <li>Track whether new reports push medium‑risk districts into the high band.</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 EpiVet India · Analytics powered by ICAR-NIVEDI NADRES‑style data for Feb 2026.</p>
+    </footer>
+
+    <script>
+        // Minimal subset of your outbreakData for analytics demo (can be replaced with full array)
+        const outbreakData = [
+            { district: "New Delhi", state: "Delhi", disease: "Lumpy Skin Disease", cases: 582, status: "critical" },
+            { district: "Jaipur", state: "Rajasthan", disease: "Lumpy Skin Disease", cases: 645, status: "critical" },
+            { district: "Nagpur", state: "Maharashtra", disease: "Lumpy Skin Disease", cases: 543, status: "critical" },
+            { district: "Bangalore", state: "Karnataka", disease: "Haemorrhagic Septicaemia", cases: 145, status: "high" },
+            { district: "Kolkata", state: "West Bengal", disease: "Haemorrhagic Septicaemia", cases: 210, status: "high" },
+            { district: "Mumbai", state: "Maharashtra", disease: "Foot and Mouth Disease", cases: 412, status: "high" },
+            { district: "Kochi", state: "Kerala", disease: "PPR", cases: 178, status: "high" },
+            { district: "Patna", state: "Bihar", disease: "PPR", cases: 267, status: "medium" },
+            { district: "Hyderabad", state: "Telangana", disease: "Foot and Mouth Disease", cases: 212, status: "high" },
+            { district: "Shimla", state: "Himachal Pradesh", disease: "Lumpy Skin Disease", cases: 312, status: "high" }
+        ];
+
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('epivet-theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+            themeToggle.checked = true;
+        }
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                document.body.classList.add('light-mode');
+                localStorage.setItem('epivet-theme', 'light');
+            } else {
+                document.body.classList.remove('light-mode');
+                localStorage.setItem('epivet-theme', 'dark');
+            }
+        });
+
+        // Filter helpers
+        const diseaseFilter = document.getElementById('diseaseFilter');
+        const stateFilter = document.getElementById('stateFilter');
+        const timeFilter = document.getElementById('timeFilter'); // currently only label, no real time logic
+        const applyFiltersBtn = document.getElementById('applyFilters');
+        const resetFiltersBtn = document.getElementById('resetFilters');
+        const topTableBody = document.querySelector('#topTable tbody');
+
+        function riskBadge(status) {
+            const map = {
+                critical: 'badge-critical',
+                high: 'badge-high',
+                medium: 'badge-medium',
+                low: 'badge-low'
+            };
+            const cls = map[status] || 'badge-low';
+            return `<span class="pill-badge ${cls}">${status}</span>`;
+        }
+
+        function applyFilters() {
+            const d = diseaseFilter.value;
+            const s = stateFilter.value;
+            let filtered = outbreakData.slice();
+
+            if (d) filtered = filtered.filter(o => o.disease === d);
+            if (s) filtered = filtered.filter(o => o.state === s);
+
+            // Update table
+            topTableBody.innerHTML = '';
+            filtered
+                .sort((a, b) => b.cases - a.cases)
+                .forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                    <td>${row.district}</td>
+                    <td>${row.state}</td>
+                    <td>${row.disease}</td>
+                    <td>${row.cases.toLocaleString()}</td>
+                    <td>${riskBadge(row.status)}</td>
+                `;
+                    topTableBody.appendChild(tr);
+                });
+
+            // Update KPIs
+            const totalCases = filtered.reduce((sum, o) => sum + o.cases, 0);
+            const sortedCases = filtered.map(o => o.cases).sort((a, b) => a - b);
+            const mid = Math.floor(sortedCases.length / 2);
+            const median = sortedCases.length
+                ? (sortedCases.length % 2 ? sortedCases[mid] : (sortedCases[mid - 1] + sortedCases[mid]) / 2)
+                : 0;
+            const criticalCount = filtered.filter(o => o.status === 'critical').length;
+            const coverage = filtered.length ? Math.min(100, Math.round((filtered.length * 12))) : 0; // toy metric[file:1]
+
+            document.getElementById('kpiTotalCases').textContent = totalCases.toLocaleString();
+            document.getElementById('kpiMedian').textContent = median.toLocaleString();
+            document.getElementById('kpiCritical').textContent = criticalCount.toString();
+            document.getElementById('kpiCoverage').textContent = coverage + '%';
+        }
+
+        applyFiltersBtn.addEventListener('click', applyFilters);
+        resetFiltersBtn.addEventListener('click', () => {
+            diseaseFilter.value = '';
+            stateFilter.value = '';
+            timeFilter.value = '30';
+            applyFilters();
+        });
+
+
+
+        // Initialize
+        window.addEventListener('load', () => {
+            applyFilters();
+        });
+    </script>
+</body>
+
+</html>
